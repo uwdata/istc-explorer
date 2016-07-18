@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>ISTC Explorer</title>
+    <script src="lib/topojson.v1.min.js"></script>
+    <script src="lib/vega-dataflow.min.js"></script>
+    <script src="lib/svg-encode.js"></script>
+    <script src="lib/world-110m.js"></script>
+    <script src="map.js"></script>
+    <style>
+      body { margin: 10px; font: 14px Helvetica Neue; }
+
+      /** Map Styling **/
+      svg.map {
+        border: 1px solid #ccc;
+        background: #bfddfb; /* ocean color */
+      }
+      .map path {
+        stroke-width: 1;
+      }
+      .map .paths path {
+        stroke: #bbb;
+        fill: #e5e8d3; /* land color */
+      }
+      .map .graticule path {
+        stroke: #f5f5f5;
+      }
+      .map .points circle {
+        fill: firebrick;
+        fill-opacity: 0.5;
+        stroke: firebrick;
+        stroke-opacity: 0.7;
+      }
+      .map .points circle:hover {
+        fill-opacity: 0.8;
+        stroke-opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="view"></div>
+    <script type="text/javascript">
+var mesh = topojson.feature(world, world.objects.countries); // 'countries' or 'land'
+var view = map(document.querySelector('#view'), 900, 500, mesh);
+
+// add data points to show on map
+view.points(vega.changeset().insert([
+  {lat:+40.7128, lon:-74.0059, radius:20, color:'purple', tooltip:'New York'},
+  {lat:-33.8688, lon:151.2093, color:'steelblue', tooltip:'Sydney'},
+  {lat:-34.6037, lon:-58.3816, radius:10, tooltip:'Buenos Aires'},
+  {lat:+39.9042, lon:116.4074, radius:40, tooltip:'Beijing'}
+]));
+    </script>
+  </body>
+</html>
