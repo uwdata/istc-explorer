@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>ISTC Explorer</title>
+    <script src="https://d3js.org/d3-path.v1.min.js"></script>
+    <script src="https://d3js.org/d3-shape.v1.min.js"></script>
     <script src="lib/jquery-3.1.0.min.js"></script>
     <script src="lib/datalib.min.js"></script>
     <script src="lib/topojson.v1.min.js"></script>
@@ -11,12 +13,20 @@
     <script src="lib/world-110m.js"></script>
     <script src="query.js"></script>
     <script src="map.js"></script>
+    <script src="line.js"></script>
     <style>
       body { margin: 10px; font: 14px Helvetica Neue; }
 
+      div.view {
+        display: inline-block;
+      }
+
+      div.view svg {
+        border: 1px solid #ccc;
+      }
+
       /** Map Styling **/
       svg.map {
-        border: 1px solid #ccc;
         background: #bfddfb; /* ocean color */
       }
       .map path {
@@ -51,39 +61,35 @@
         stroke: firebrick;
         stroke-opacity: 0.4;
       }
+
+      .line path {
+        fill: none;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+      }
     </style>
   </head>
   <body>
-    <div id="view"></div>
+    <div id="mapv" class="view"></div>
+    <div id="linev" class="view"></div>
     <script type="text/javascript">
 
-var width  = 600,
+var width = 600,
     height = 666,
     mesh = topojson.feature(world, world.objects.countries), // 'countries' or 'land'
-    view = map(document.querySelector('#view'), width, height, mesh);
+    mapv = map(document.querySelector('#mapv'), width, height, mesh);
 
 // Position + zoom into stations.
-view.centerPhi(11.7).rotateLambda(44).scale(250);
+mapv.centerPhi(11.7).rotateLambda(44).scale(250);
 
 // Load data from the server!
 bdRelationalQuery('select * from sampledata.station_info', function(json) {
   json.forEach(function(d) { d.class = 'sampledata'; });
-  view.points(vega.changeset().insert(json));
+  mapv.points(vega.changeset().insert(json));
 });
 
-// bdRelationalQuery('select * from sensordata.station_info', function(json) {
-//   json.forEach(function(d) { d.class = 'sensordata'; });
-//   view.points(vega.changeset().insert(json));
-// });
-
-// add data points to show on map
-// view.points(vega.changeset().insert([
-//   {lat:+40.7128, lon:-74.0059, radius:20, color:'purple', tooltip:'New York'},
-//   {lat:-33.8688, lon:151.2093, color:'steelblue', tooltip:'Sydney'},
-//   {lat:-34.6037, lon:-58.3816, radius:10, tooltip:'Buenos Aires'},
-//   {lat:+39.9042, lon:116.4074, radius:40, tooltip:'Beijing'}
-// ]));
-
+var linev = line(document.querySelector('#linev'), width, height);
+linev.points(vega.changeset().insert([{"depth_m":10,"nitrat_umol_per_kg":12.96},{"depth_m":10,"nitrat_umol_per_kg":13.33},{"depth_m":24,"nitrat_umol_per_kg":13.06},{"depth_m":25,"nitrat_umol_per_kg":13.04},{"depth_m":49,"nitrat_umol_per_kg":15.13},{"depth_m":51,"nitrat_umol_per_kg":13.86},{"depth_m":74,"nitrat_umol_per_kg":19.32},{"depth_m":75,"nitrat_umol_per_kg":20.54},{"depth_m":99,"nitrat_umol_per_kg":24.03},{"depth_m":100,"nitrat_umol_per_kg":22.51},{"depth_m":151,"nitrat_umol_per_kg":25.52},{"depth_m":151,"nitrat_umol_per_kg":25.76},{"depth_m":200,"nitrat_umol_per_kg":26.68},{"depth_m":200,"nitrat_umol_per_kg":26.65},{"depth_m":250,"nitrat_umol_per_kg":28.04},{"depth_m":250,"nitrat_umol_per_kg":27.62},{"depth_m":300,"nitrat_umol_per_kg":29.09},{"depth_m":399,"nitrat_umol_per_kg":30.4},{"depth_m":399,"nitrat_umol_per_kg":30.35},{"depth_m":400,"nitrat_umol_per_kg":30.77}]));
     </script>
   </body>
 </html>
