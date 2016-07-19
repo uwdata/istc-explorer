@@ -6,6 +6,32 @@ bdRelationalQuery(query,function(rows) {
 });
 */
 
+// TODO: write queries to get the log data for the cruises?
+
+// gets the conversion info for all genome sequences associated with this station
+function getAggregateGenomicsDataForStation(stationId,callback) {
+   var queryString = "select count(*) from sampledata.genomics_conversion where bodc_station="+stationId;
+  bdRelationalQuery(queryString,callback);
+};
+
+// gets the conversion info for all genome sequences associated with this station
+function getGenomicsDataForStation(stationId,callback) {
+   var queryString = "select * from sampledata.genomics_conversion where bodc_station="+stationId;
+  bdRelationalQuery(queryString,callback);
+};
+
+// gets aggregate sample info associated with this station
+function getAggregateSampleDataForStation(stationId,callback) {
+  var queryString = "select count(*) from sampledata.main where bodc_station="+stationId+" and depth_m is not null";
+  bdRelationalQuery(queryString,callback);
+};
+
+// gets all sample info associated with this station
+function getSampleDataForStation(stationId,callback) {
+  var queryString = "select * from sampledata.main where bodc_station="+stationId+" and depth_m is not null";
+  bdRelationalQuery(queryString,callback);
+};
+
 // sqlString: a sql query (with no bigdawg outer syntax
 // callback: function to call with result rows as the input
 // result format: [{"field1":"val","field2":"val",...},{"field1":"val",...},...]

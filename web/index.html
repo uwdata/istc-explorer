@@ -14,6 +14,7 @@
     <script src="query.js"></script>
     <script src="map.js"></script>
     <script src="line.js"></script>
+    <script src="station_events.js"></script>
     <style>
       body { margin: 10px; font: 14px Helvetica Neue; }
 
@@ -86,6 +87,8 @@ mapv.centerPhi(11.7).rotateLambda(44).scale(250);
 bdRelationalQuery('select * from sampledata.station_info', function(json) {
   json.forEach(function(d) { d.class = 'sampledata'; });
   mapv.points(vega.changeset().insert(json));
+  addHoverEventsForStations('.sampledata');
+  addClickEventsForStations('.sampledata');
 });
 
 var linev = line(document.querySelector('#linev'), width, height);
