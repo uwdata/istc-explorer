@@ -46,14 +46,15 @@ function map(el, width, height, worldmap) {
   var points = {
     enter: function(item, _) {
       var d = item.datum;
-      if (d && d.tooltip) {
+      if (d && d.bodc_station) {
         var tt = document.createElementNS(xmlns, 'title');
-        tt.textContent = d.tooltip;
+        tt.textContent = d.bodc_station || d.station_id || d.station;
         item.appendChild(tt);
       }
-      item.setAttribute('r', d && d.radius || 8);
-      item.style.stroke = d && d.color || null;
+      item.setAttribute('class', d && d.class);
+      item.setAttribute('r', 8);
       item.style.fill = d && d.color || null;
+      // item.style.stroke = d && d.color || null;
     },
     update: function(item, _) {
       var d = item.datum;
@@ -79,8 +80,8 @@ function map(el, width, height, worldmap) {
   };
 
   // dataflow definition
-  var lon = vega.field('lon'),
-      lat = vega.field('lat'),
+  var lon = vega.field('longitude'),
+      lat = vega.field('latitude'),
       df = new vega.Dataflow(),
       w = df.add(width),
       h = df.add(height),
@@ -120,10 +121,21 @@ function map(el, width, height, worldmap) {
       e0 = df.add(vega.Encode, {encoders:paths, pulse:c0});
 
       d1 = df.add(vega.Collect),
+
+      // ex = df.add(vega.Extent, {field: vega.field('bot_depth'), pulse: d1}),
+      // rs = df.add(vega.Scale, {type: 'sqrt', domain: ex, zero: false, range: [20, 1]}),
+      // cs = df.add(vega.Scale, {type: 'linear', domain: ex, zero: false, range: ['#ffffff', '#000000']}),
+
       p1 = df.add(vega.GeoPoint, {projection:pj, fields:[lon, lat], pulse:d1}),
       j1 = df.add(vega.DataJoin, {item:items(gpoints, 'circle'), pulse:p1}),
       c1 = df.add(vega.Collect, {pulse:j1}),
-      e1 = df.add(vega.Encode, {encoders:points, pulse:c1});
+      e1 = df.add(vega.Encode, {
+        encoders: points,
+        // colorScale: cs,
+        // radiusScale: rs,
+        scale: sc,
+        pulse: c1
+      });
 
   // event streams
   var wheel = df.events(svg, 'wheel').consume(true),

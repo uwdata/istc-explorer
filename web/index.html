@@ -2,10 +2,14 @@
 <html>
   <head>
     <title>ISTC Explorer</title>
+    <script src="lib/jquery-3.1.0.min.js"></script>
+    <script src="lib/datalib.min.js"></script>
     <script src="lib/topojson.v1.min.js"></script>
     <script src="lib/vega-dataflow.min.js"></script>
     <script src="lib/svg-encode.js"></script>
     <script src="lib/world-110m.js"></script>
+    <script src="lib/world-110m.js"></script>
+    <script src="query.js"></script>
     <script src="map.js"></script>
     <style>
       body { margin: 10px; font: 14px Helvetica Neue; }
@@ -27,30 +31,59 @@
         fill: none;
       }
       .map .points circle {
+        /*stroke: firebrick;*/
+        /*stroke-opacity: 0.7;*/
+      }
+      .map .points circle:hover {
+        fill-opacity: 0.8 !important;
+        stroke-opacity: 1 !important;
+      }
+      .map .points circle.sampledata {
         fill: firebrick;
         fill-opacity: 0.5;
         stroke: firebrick;
         stroke-opacity: 0.7;
       }
-      .map .points circle:hover {
-        fill-opacity: 0.8;
-        stroke-opacity: 1;
+
+      .map .points circle.sensordata {
+        fill: firebrick;
+        fill-opacity: 0.1;
+        stroke: firebrick;
+        stroke-opacity: 0.4;
       }
     </style>
   </head>
   <body>
     <div id="view"></div>
     <script type="text/javascript">
-var mesh = topojson.feature(world, world.objects.countries); // 'countries' or 'land'
-var view = map(document.querySelector('#view'), 900, 500, mesh);
+
+var width  = 600,
+    height = 666,
+    mesh = topojson.feature(world, world.objects.countries), // 'countries' or 'land'
+    view = map(document.querySelector('#view'), width, height, mesh);
+
+// Position + zoom into stations.
+view.centerPhi(11.7).rotateLambda(44).scale(250);
+
+// Load data from the server!
+bdRelationalQuery('select * from sampledata.station_info', function(json) {
+  json.forEach(function(d) { d.class = 'sampledata'; });
+  view.points(vega.changeset().insert(json));
+});
+
+// bdRelationalQuery('select * from sensordata.station_info', function(json) {
+//   json.forEach(function(d) { d.class = 'sensordata'; });
+//   view.points(vega.changeset().insert(json));
+// });
 
 // add data points to show on map
-view.points(vega.changeset().insert([
-  {lat:+40.7128, lon:-74.0059, radius:20, color:'purple', tooltip:'New York'},
-  {lat:-33.8688, lon:151.2093, color:'steelblue', tooltip:'Sydney'},
-  {lat:-34.6037, lon:-58.3816, radius:10, tooltip:'Buenos Aires'},
-  {lat:+39.9042, lon:116.4074, radius:40, tooltip:'Beijing'}
-]));
+// view.points(vega.changeset().insert([
+//   {lat:+40.7128, lon:-74.0059, radius:20, color:'purple', tooltip:'New York'},
+//   {lat:-33.8688, lon:151.2093, color:'steelblue', tooltip:'Sydney'},
+//   {lat:-34.6037, lon:-58.3816, radius:10, tooltip:'Buenos Aires'},
+//   {lat:+39.9042, lon:116.4074, radius:40, tooltip:'Beijing'}
+// ]));
+
     </script>
   </body>
 </html>
