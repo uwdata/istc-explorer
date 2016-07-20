@@ -115,18 +115,23 @@ function line(el, width, height) {
 
   var ticks = {
     enter: function(item, _) {
-      var o = flipOrient(_);
+      var o = flipOrient(_),
+          grid = _.type === 'grid',
+          size = o === 'x' ? width : height;
+
       item.setAttribute('stroke-opacity', 0);
-      item.setAttribute('stroke', 'black');
+      item.setAttribute('stroke', grid ? 'grey' : 'black');
       item.setAttribute(o+'1', 0);
-      item.setAttribute(o+'2', 5);
+      item.setAttribute(o+'2', grid ? size : 5);
     },
     update: function(item, _) {
-      var o = _.orient;
-      var x = Math.round(_.s(item.datum.value)) + 0.5;
+      var o = _.orient,
+          x = Math.round(_.s(item.datum.value)) + 0.5,
+          grid = _.type === 'grid';
+
       item.setAttribute(o+'1', x);
       item.setAttribute(o+'2', x);
-      item.setAttribute('stroke-opacity', 1);
+      item.setAttribute('stroke-opacity', grid ? 0.25 : 1);
       return true;
     },
     exit: function(item, _) {
@@ -218,20 +223,28 @@ function line(el, width, height) {
       // x-axis
       j2 = df.add(vega.DataJoin, {item: items(gx, 'line'), pulse: xt}),
       c2 = df.add(vega.Collect, {pulse: j2}),
-      e2 = df.add(vega.Encode, {encoders: ticks, s: xs, orient: 'x', pulse: c2}),
+      e2 = df.add(vega.Encode, {encoders: ticks, s: xs, orient: 'x', type: 'tick', pulse: c2}),
 
-      j3 = df.add(vega.DataJoin, {item:items(gx, 'text'), pulse: xt}),
-      c3 = df.add(vega.Collect, {pulse:j3}),
-      e3 = df.add(vega.Encode, {encoders: labels, s: xs, orient: 'x', pulse:c3}),
+      j3 = df.add(vega.DataJoin, {item: items(gx, 'line'), pulse: xt}),
+      c3 = df.add(vega.Collect, {pulse: j3}),
+      e3 = df.add(vega.Encode, {encoders: ticks, s: xs, orient: 'x', type: 'grid', pulse: c3}),
+
+      j4 = df.add(vega.DataJoin, {item:items(gx, 'text'), pulse: xt}),
+      c4 = df.add(vega.Collect, {pulse:j4}),
+      e4 = df.add(vega.Encode, {encoders: labels, s: xs, orient: 'x', pulse:c4}),
 
       // y-axis
-      j4 = df.add(vega.DataJoin, {item: items(gy, 'line'), pulse: yt}),
-      c4 = df.add(vega.Collect, {pulse: j4}),
-      e4 = df.add(vega.Encode, {encoders: ticks, s: ys, orient: 'y', pulse: c4}),
-
-      j5 = df.add(vega.DataJoin, {item:items(gy, 'text'), pulse: yt}),
+      j5 = df.add(vega.DataJoin, {item: items(gy, 'line'), pulse: yt}),
       c5 = df.add(vega.Collect, {pulse: j5}),
-      e5 = df.add(vega.Encode, {encoders: labels, s: ys, orient: 'y', pulse: c5});
+      e5 = df.add(vega.Encode, {encoders: ticks, s: ys, orient: 'y', type: 'tick', pulse: c5}),
+
+      j6 = df.add(vega.DataJoin, {item: items(gy, 'line'), pulse: yt}),
+      c6 = df.add(vega.Collect, {pulse: j6}),
+      c6 = df.add(vega.Encode, {encoders: ticks, s: ys, orient: 'y', type: 'grid', pulse: c6}),
+
+      j7 = df.add(vega.DataJoin, {item:items(gy, 'text'), pulse: yt}),
+      j7 = df.add(vega.Collect, {pulse: j7}),
+      e7 = df.add(vega.Encode, {encoders: labels, s: ys, orient: 'y', pulse: j7});
 
   function prop(op) {
     return function(value) {
