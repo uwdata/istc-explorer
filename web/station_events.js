@@ -36,8 +36,19 @@ function getAggregateData(o,stationId){
   });
 };
 
+
 function addClickEventsForStations(stationSelector,linev,linevSelector) {
   $(stationSelector).off('click',stationSelector).on('click',function() {
+    var clicked = $(this).hasClass('emphasize');
+    if(clicked) {
+      $('.map .points circle.sampledata').removeClass('emphasize');
+      $('.map .points circle.sampledata').removeClass("deemphasize");
+      $(linevSelector).addClass('hide');
+      return;
+    }
+    $('.map .points circle.sampledata').removeClass('emphasize');
+    $('.map .points circle.sampledata').addClass("deemphasize");
+    $(this).addClass('emphasize');
     console.log('data:',this.datum);
     stationId = this.datum.bodc_station;
     // TODO: trigger a line chart to be drawn
