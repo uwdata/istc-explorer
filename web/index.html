@@ -23,10 +23,12 @@
 
       div.view {
         display: inline-block;
+        position: relative;
       }
 
       div.view svg {
         border: 1px solid #ccc;
+        margin: 20px 0 0 20px;
       }
 
       /** Map Styling **/
@@ -80,13 +82,32 @@
         stroke-opacity: 0.4;
       }
 
+      /** Line Chart Styling **/
+
+      #linev.hide {
+        display: none;
+      }
+
       .line path {
         fill: none;
         stroke-width: 1.5px;
       }
 
-      #linev.hide {
-        display: none;
+      .axislbl {
+        position: absolute;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .xaxis.axislbl {
+        top: 0;
+        left: 20px;
+      }
+
+      .yaxis.axislbl {
+        transform: rotate(-90deg);
+        top: 45px;
+        left: -25px;
       }
 
     </style>

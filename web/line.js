@@ -46,9 +46,19 @@ function line(el, width, height) {
   gx.setAttribute('class', 'xaxis');
   svg.appendChild(gx);
 
+  var lx = document.createElement('p');
+  lx.innerHTML = 'nutrient (umol/kg)';
+  lx.setAttribute('class', 'xaxis axislbl');
+  el.appendChild(lx);
+
   var gy = document.createElementNS(xmlns, 'g');
   gy.setAttribute('class', 'yaxis');
   svg.appendChild(gy);
+
+  var ly = document.createElement('p');
+  ly.innerHTML = 'depth (m)';
+  ly.setAttribute('class', 'yaxis axislbl');
+  el.appendChild(ly);
 
   // encoding functions for line paths
   var paths = {
