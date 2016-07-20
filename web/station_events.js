@@ -1,40 +1,39 @@
-var defaultHoverTimeout = 400;
-
 function addHoverEventsForStations(stationSelector) {
   $(stationSelector).off('mouseenter',stationSelector)
     .off('mouseleeave',stationSelector)
-    .on('mouseenter',function() {
-      //console.log('data:',this.datum);
+    .on('mouseenter',function(e) {
+      this.eventDone = false;
       var stationId = this.datum.bodc_station;
-      checkTimer(this,function(){getAggregateData(stationId);},defaultHoverTimeout);
+      console.log(this);
+      $(this).attr('title',''); // has to have a title attribute
+      if(!this.hasTooltip) {
+        getAggregateData(this,stationId);
+      }
     })
-    .on('mouseleave',function() {
-      clearTimer(this);
+    .on('mouseleave',function(e) {
+      this.eventDone = true;
     });
 };
 
-function getAggregateData(stationId){
+function getAggregateData(o,stationId){
+  if(o.eventDone) return; // don't do anything
   getAggregateGenomicsDataForStation(stationId,function(aggregateGenomicsData) {
+    if(o.eventDone) return; // don't do anything
     var gc = aggregateGenomicsData[0]['count'];
-    console.log('total genome sequences:',gc);
+    //console.log('stationId',stationId);
+    //console.log('total genome sequences:',gc);
     getAggregateSampleDataForStation(stationId,function(aggregateSampleData) {
+      if(o.eventDone) return; // don't do anything
       var sc = aggregateSampleData[0]['count'];
-      console.log('total samples:',gc);
+      //console.log('total samples:',gc);
+      $(o).tooltip({content:
+        "station: "+stationId+", "
+        +"total genome sequences: "+gc+", "
+        +"total samples: "+sc+""});
+      $(o).tooltip("open");
+      o.hasTooltip = true;
     });
   });
-};
-
-// on mouse leave or reset, clear timer
-function clearTimer(o) {
-  if(o.istcExHoverTimer) {
-    clearTimeout(o.istcExHoverTimer);
-    delete o.istcExHoverTimer;
-  }
-};
-
-function checkTimer(o,toDoFunc,timeout) {
-  clearTimer(o); // reset
-  o.istcExHoverTimer = setTimeout(toDoFunc,timeout);
 };
 
 function addClickEventsForStations(stationSelector) {
