@@ -165,12 +165,17 @@ function line(el, width, height) {
   };
 
   // dataflow definition
-  $depth = vega.field('depth_m'),
+  var $depth = vega.field('depth_m'),
       $key = vega.field('key'),
       $value = vega.field('value'),
       agg = dl.groupby('key'),
 
       df = new vega.Dataflow(),
+
+      allFields = df.add(['oxygen_umol_per_kg', 'ctdoxy_umol_per_kg',
+        'phspht_umol_per_kg', 'silcat_umol_per_kg', 'nitrat_umol_per_kg',
+        'nitrit_umol_per_kg', 'talk_umol_per_kg', 'doc_umol_per_kg',
+        'toc_umol_per_kg']),
 
       fields = df.add(['nitrat_umol_per_kg']),
       $fields = df.add(function(_) {
@@ -196,7 +201,7 @@ function line(el, width, height) {
       yt = df.add(vega.AxisTicks, {scale:ys}),
 
       // color scale
-      cs = df.add(vega.Scale, {type: 'ordinal', domain: fields, scheme: 'category10'}),
+      cs = df.add(vega.Scale, {type: 'ordinal', domain: allFields, scheme: 'category10'}),
 
       // lines
       lg = df.add(LineGenerator, {pulse: d1, agg: agg}),
