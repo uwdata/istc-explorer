@@ -36,7 +36,7 @@ function getSpecificSampleDataForStation(stationId,fieldNames,callback) {
     queryString += " and "+fieldNames[i]+" is not null";
   }
 */
-  console.log("queryString:",queryString);
+  // console.log("queryString:",queryString);
   bdRelationalQuery(queryString,callback);
 };
 

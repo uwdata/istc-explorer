@@ -4,7 +4,7 @@ function addHoverEventsForStations(stationSelector) {
     .on('mouseenter',function(e) {
       this.eventDone = false;
       var stationId = this.datum.bodc_station;
-      console.log(this);
+      // console.log(this);
       $(this).attr('title',''); // has to have a title attribute
       if(!this.hasTooltip) {
         getAggregateData(this,stationId);
@@ -49,13 +49,13 @@ function addClickEventsForStations(stationSelector,linev,linevSelector) {
     $('.map .points circle.sampledata').removeClass('emphasize');
     $('.map .points circle.sampledata').addClass("deemphasize");
     $(this).addClass('emphasize');
-    console.log('data:',this.datum);
+    // console.log('data:',this.datum);
     stationId = this.datum.bodc_station;
     // TODO: trigger a line chart to be drawn
     // get the necessary data for this station
     var defaultFields = ['nitrat_umol_per_kg', 'silcat_umol_per_kg', 'phspht_umol_per_kg'];
     getSpecificSampleDataForStation(stationId,defaultFields,function(res){
-      console.log("query results:",res);
+      // console.log("query results:",res);
       // draw the line chart
       res.sort(dl.comparator('depth_m'));
       linev.fields(defaultFields);

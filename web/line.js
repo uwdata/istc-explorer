@@ -38,6 +38,10 @@ function line(el, width, height) {
   svg.setAttribute('height', height);
   el.appendChild(svg);
 
+  var gpaths = document.createElementNS(xmlns, 'g');
+  gpaths.setAttribute('class', 'lines');
+  svg.appendChild(gpaths);
+
   var gx = document.createElementNS(xmlns, 'g');
   gx.setAttribute('class', 'xaxis');
   svg.appendChild(gx);
@@ -46,25 +50,48 @@ function line(el, width, height) {
   gy.setAttribute('class', 'yaxis');
   svg.appendChild(gy);
 
-  var gpaths = document.createElementNS(xmlns, 'g');
-  gpaths.setAttribute('class', 'lines');
-  svg.appendChild(gpaths);
-
   // encoding functions for line paths
   var paths = {
     enter: function(item, _) {
       var d = item.datum,
           line = d3.line().curve(d3.curveBasis)
             .x(function(d) { return _.xs(_.$value(d)); })
-            .y(function(d) { return _.ys(_.$depth(d)); });
+            .y(function(d) { return _.ys(_.$depth(d)); })
+            .curve(d3.curveCatmullRom.alpha(0.5))
 
-      item.setAttribute('class', d[0].key);
+      item.setAttribute('class', _.$key(d[0]));
       item.setAttribute('d', line(d));
       item.setAttribute('stroke', _.cs(_.$key(d[0])));
       return true;
     },
     update: function(item, _) {
       var d = item.datum;
+      return true;
+    },
+    exit: function(item, _) {
+      item.remove();
+    }
+  };
+
+  // encoding functions for geo points
+  var points = {
+    enter: function(item, _) {
+      var d = item.datum,
+          k = _.$key(d),
+          v = _.$value(d),
+          tt = document.createElementNS(xmlns, 'title');
+
+      tt.textContent = k + ': ' + v;
+      item.appendChild(tt);
+
+      item.setAttribute('class', k);
+      item.setAttribute('r', 4);
+      item.style.fill = _.cs(k);
+    },
+    update: function(item, _) {
+      var d = item.datum;
+      item.setAttribute('cx', _.xs(_.$value(d)));
+      item.setAttribute('cy', _.ys(_.$depth(d)));
       return true;
     },
     exit: function(item, _) {
@@ -96,6 +123,7 @@ function line(el, width, height) {
       item.remove();
     }
   };
+
   var labels = {
     enter: function(item, _) {
       var o = flipOrient(_);
@@ -106,8 +134,14 @@ function line(el, width, height) {
       item.textContent = item.datum.label;
     },
     update: function(item, _) {
+      var o = _.orient;
       item.setAttribute('fill-opacity', 1);
-      item.setAttribute(_.orient, Math.round(_.s(item.datum.value)));
+      item.setAttribute(o, Math.round(_.s(item.datum.value)));
+
+      if (o === 'y') {
+        item.setAttribute('dx', 5);
+        item.setAttribute('dy', 5);
+      }
       return true;
     },
     exit: function(item, _) {
@@ -149,34 +183,45 @@ function line(el, width, height) {
       // color scale
       cs = df.add(vega.Scale, {type: 'ordinal', domain: fields, scheme: 'category10'}),
 
+      // lines
       lg = df.add(LineGenerator, {pulse: d1, agg: agg}),
-      c0 = df.add(vega.Collect, {pulse: lg}),
-      j0 = df.add(vega.DataJoin, {item: items(gpaths, 'path'), pulse: c0}),
-      c1 = df.add(vega.Collect, {pulse: j0}),
+      cg = df.add(vega.Collect, {pulse: lg}),
+      j0 = df.add(vega.DataJoin, {item: items(gpaths, 'path'), pulse: cg}),
+      c0 = df.add(vega.Collect, {pulse: j0}),
       e0 = df.add(vega.Encode, {
         encoders: paths,
+        $key: $key, $value: $value, $depth: $depth,
+        xs: xs, ys: ys, cs: cs,
+        pulse: c0
+      }),
+
+      // points
+      j1 = df.add(vega.DataJoin, {item: items(gpaths, 'circle'), pulse: d1}),
+      c1 = df.add(vega.Collect, {pulse: j1}),
+      e1 = df.add(vega.Encode, {
+        encoders: points,
         $key: $key, $value: $value, $depth: $depth,
         xs: xs, ys: ys, cs: cs,
         pulse: c1
       }),
 
       // x-axis
-      j1 = df.add(vega.DataJoin, {item: items(gx, 'line'), pulse: xt}),
-      c2 = df.add(vega.Collect, {pulse: j1}),
-      e1 = df.add(vega.Encode, {encoders: ticks, s: xs, orient: 'x', pulse: c2}),
+      j2 = df.add(vega.DataJoin, {item: items(gx, 'line'), pulse: xt}),
+      c2 = df.add(vega.Collect, {pulse: j2}),
+      e2 = df.add(vega.Encode, {encoders: ticks, s: xs, orient: 'x', pulse: c2}),
 
-      j2 = df.add(vega.DataJoin, {item:items(gx, 'text'), pulse: xt}),
-      c3 = df.add(vega.Collect, {pulse:j2}),
-      e2 = df.add(vega.Encode, {encoders: labels, s: xs, orient: 'x', pulse:c3}),
+      j3 = df.add(vega.DataJoin, {item:items(gx, 'text'), pulse: xt}),
+      c3 = df.add(vega.Collect, {pulse:j3}),
+      e3 = df.add(vega.Encode, {encoders: labels, s: xs, orient: 'x', pulse:c3}),
 
       // y-axis
-      j2 = df.add(vega.DataJoin, {item: items(gy, 'line'), pulse: yt}),
-      c4 = df.add(vega.Collect, {pulse: j2}),
-      e3 = df.add(vega.Encode, {encoders: ticks, s: ys, orient: 'y', pulse: c4}),
+      j4 = df.add(vega.DataJoin, {item: items(gy, 'line'), pulse: yt}),
+      c4 = df.add(vega.Collect, {pulse: j4}),
+      e4 = df.add(vega.Encode, {encoders: ticks, s: ys, orient: 'y', pulse: c4}),
 
-      j3 = df.add(vega.DataJoin, {item:items(gy, 'text'), pulse: yt}),
-      c4 = df.add(vega.Collect, {pulse: j3}),
-      e4 = df.add(vega.Encode, {encoders: labels, s: ys, orient: 'y', pulse: c4});
+      j5 = df.add(vega.DataJoin, {item:items(gy, 'text'), pulse: yt}),
+      c5 = df.add(vega.Collect, {pulse: j5}),
+      e5 = df.add(vega.Encode, {encoders: labels, s: ys, orient: 'y', pulse: c5});
 
   function prop(op) {
     return function(value) {
