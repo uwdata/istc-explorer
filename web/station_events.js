@@ -6,7 +6,6 @@ function changeMeasures(evt) {
     console.log('change');
     $(clicked).trigger('click');
   }
-  evt.stopPropagation();
   return false;
 };
 
