@@ -192,6 +192,7 @@ function line(el, width, height) {
     dataflow: df,
     points: prop(d0),
     fields: prop(fields),
-    f0: prop(f0)
+    f0: prop(f0),
+    colorScale: prop(cs)
   };
 }
