@@ -56,7 +56,7 @@ function bdRaw(bigDawgQuery,callback) {
         var row = {};
         var vals = line.split("\t")
         for(var j = 0; j < vals.length; j++) {
-          row[fields[j]] = vals[j];
+          row[fields[j]] = !isNaN(+vals[j]) ? +vals[j] : vals[j];
         }
         rows.push(row);
       }
