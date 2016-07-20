@@ -10,7 +10,7 @@
     <script src="lib/jquery-ui.min.js"></script>
     <script src="lib/datalib.min.js"></script>
     <script src="lib/topojson.v1.min.js"></script>
-    <script src="lib/vega-dataflow.min.js"></script>
+    <script src="lib/vega-dataflow.js"></script>
     <script src="lib/svg-encode.js"></script>
     <script src="lib/world-110m.js"></script>
     <script src="lib/world-110m.js"></script>
@@ -68,7 +68,6 @@
 
       .line path {
         fill: none;
-        stroke: steelblue;
         stroke-width: 1.5px;
       }
     </style>
@@ -95,7 +94,8 @@ bdRelationalQuery('select * from sampledata.station_info', function(json) {
 });
 
 var linev = line(document.querySelector('#linev'), width, height);
-linev.points(vega.changeset().insert([{"depth_m":10,"nitrat_umol_per_kg":12.96},{"depth_m":10,"nitrat_umol_per_kg":13.33},{"depth_m":24,"nitrat_umol_per_kg":13.06},{"depth_m":25,"nitrat_umol_per_kg":13.04},{"depth_m":49,"nitrat_umol_per_kg":15.13},{"depth_m":51,"nitrat_umol_per_kg":13.86},{"depth_m":74,"nitrat_umol_per_kg":19.32},{"depth_m":75,"nitrat_umol_per_kg":20.54},{"depth_m":99,"nitrat_umol_per_kg":24.03},{"depth_m":100,"nitrat_umol_per_kg":22.51},{"depth_m":151,"nitrat_umol_per_kg":25.52},{"depth_m":151,"nitrat_umol_per_kg":25.76},{"depth_m":200,"nitrat_umol_per_kg":26.68},{"depth_m":200,"nitrat_umol_per_kg":26.65},{"depth_m":250,"nitrat_umol_per_kg":28.04},{"depth_m":250,"nitrat_umol_per_kg":27.62},{"depth_m":300,"nitrat_umol_per_kg":29.09},{"depth_m":399,"nitrat_umol_per_kg":30.4},{"depth_m":399,"nitrat_umol_per_kg":30.35},{"depth_m":400,"nitrat_umol_per_kg":30.77}]));
+linev.fields(['nitrat_umol_per_kg', 'silcat_umol_per_kg', 'phspht_umol_per_kg']);
+linev.points(vega.changeset().insert([{"depth_m":10,"nitrat_umol_per_kg":12.96,"silcat_umol_per_kg":0,"phspht_umol_per_kg":1.01},{"depth_m":10,"nitrat_umol_per_kg":13.33,"silcat_umol_per_kg":0,"phspht_umol_per_kg":1.01},{"depth_m":24,"nitrat_umol_per_kg":13.06,"silcat_umol_per_kg":0,"phspht_umol_per_kg":1.03},{"depth_m":25,"nitrat_umol_per_kg":13.04,"silcat_umol_per_kg":0,"phspht_umol_per_kg":2.37},{"depth_m":49,"nitrat_umol_per_kg":15.13,"silcat_umol_per_kg":0.12,"phspht_umol_per_kg":1.21},{"depth_m":51,"nitrat_umol_per_kg":13.86,"silcat_umol_per_kg":0,"phspht_umol_per_kg":2.34},{"depth_m":74,"nitrat_umol_per_kg":19.32,"silcat_umol_per_kg":1.91,"phspht_umol_per_kg":2.29},{"depth_m":75,"nitrat_umol_per_kg":20.54,"silcat_umol_per_kg":2.85,"phspht_umol_per_kg":1.55},{"depth_m":99,"nitrat_umol_per_kg":24.03,"silcat_umol_per_kg":7.53,"phspht_umol_per_kg":1.71},{"depth_m":100,"nitrat_umol_per_kg":22.51,"silcat_umol_per_kg":5.69,"phspht_umol_per_kg":2.25},{"depth_m":151,"nitrat_umol_per_kg":25.52,"silcat_umol_per_kg":11.77,"phspht_umol_per_kg":2.24},{"depth_m":151,"nitrat_umol_per_kg":25.76,"silcat_umol_per_kg":12.39,"phspht_umol_per_kg":1.75},{"depth_m":200,"nitrat_umol_per_kg":26.68,"silcat_umol_per_kg":15,"phspht_umol_per_kg":1.82},{"depth_m":200,"nitrat_umol_per_kg":26.65,"silcat_umol_per_kg":14.58,"phspht_umol_per_kg":2.23},{"depth_m":250,"nitrat_umol_per_kg":28.04,"silcat_umol_per_kg":18.85,"phspht_umol_per_kg":2.21},{"depth_m":250,"nitrat_umol_per_kg":27.62,"silcat_umol_per_kg":17.82,"phspht_umol_per_kg":1.88},{"depth_m":300,"nitrat_umol_per_kg":29.09,"silcat_umol_per_kg":22.78,"phspht_umol_per_kg":1.01},{"depth_m":399,"nitrat_umol_per_kg":30.4,"silcat_umol_per_kg":28.59,"phspht_umol_per_kg":2.06},{"depth_m":399,"nitrat_umol_per_kg":30.35,"silcat_umol_per_kg":28.61,"phspht_umol_per_kg":2.05},{"depth_m":400,"nitrat_umol_per_kg":30.77,"silcat_umol_per_kg":30.27,"phspht_umol_per_kg":1.11}]));
     </script>
   </body>
 </html>

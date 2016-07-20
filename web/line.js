@@ -6,8 +6,19 @@ var LineGenerator = (function() {
   var prototype = vega.inherits(LineGenerator, vega.Transform);
 
   prototype.transform = function(_, pulse) {
-    var out = pulse.fork();
-    out.add.push(pulse.source);
+    var out = pulse.fork(),
+        series = _.agg.execute(pulse.source);
+
+    series.forEach(function(s) {
+      out.add.push(vega.Tuple.ingest(s.values));
+    });
+
+    // Hacky! Clear out previous line points.
+    if (dl.isArray(this.value)) {
+      out.rem.push.apply(out.rem, this.value);
+    }
+
+    this.value = out.add;
     return out;
   };
 
@@ -44,10 +55,12 @@ function line(el, width, height) {
     enter: function(item, _) {
       var d = item.datum,
           line = d3.line().curve(d3.curveBasis)
-            .x(function(d) { return _.xs(_.$x(d)); })
-            .y(function(d) { return _.ys(_.$y(d)); });
+            .x(function(d) { return _.xs(_.$value(d)); })
+            .y(function(d) { return _.ys(_.$depth(d)); });
 
+      item.setAttribute('class', d[0].key);
       item.setAttribute('d', line(d));
+      item.setAttribute('stroke', _.cs(_.$key(d[0])));
       return true;
     },
     update: function(item, _) {
@@ -103,33 +116,47 @@ function line(el, width, height) {
   };
 
   // dataflow definition
-  var $x = vega.field('nitrat_umol_per_kg'),
-      $y = vega.field('depth_m'),
+  $depth = vega.field('depth_m'),
+      $key = vega.field('key'),
+      $value = vega.field('value'),
+      agg = dl.groupby('key'),
 
       df = new vega.Dataflow(),
+
+      fields = df.add(['nitrat_umol_per_kg']),
+      $fields = df.add(function(_) {
+        return _.fields.map(vega.field);
+      }, {fields: fields}),
+
       xr = df.add([MARGIN, width-MARGIN]),  // x-range
       yr = df.add([MARGIN, height-MARGIN]), // y-range
 
       d0 = df.add(vega.Collect),
 
+      f0 = df.add(vega.Fold, {fields: $fields, pulse: d0}),
+      d1 = df.add(vega.Collect, {pulse: f0}),
+
       // x scale and axis
-      xe = df.add(vega.Extent, {field: $x, pulse: d0}),
+      xe = df.add(vega.Extent, {field: $value, pulse: d1}),
       xs = df.add(vega.Scale, {type: 'linear', domain: xe, zero: false, range: xr}),
       xt = df.add(vega.AxisTicks, {scale: xs}),
 
       // y scale and axis
-      ye = df.add(vega.Extent, {field: $y, pulse: d0}),
+      ye = df.add(vega.Extent, {field: $depth, pulse: d1}),
       ys = df.add(vega.Scale, {type: 'linear', domain: ye, zero: false, range: yr}),
       yt = df.add(vega.AxisTicks, {scale:ys}),
 
-      lg = df.add(LineGenerator, {pulse: d0}),
+      // color scale
+      cs = df.add(vega.Scale, {type: 'ordinal', domain: fields, scheme: 'category10'}),
+
+      lg = df.add(LineGenerator, {pulse: d1, agg: agg}),
       c0 = df.add(vega.Collect, {pulse: lg}),
       j0 = df.add(vega.DataJoin, {item: items(gpaths, 'path'), pulse: c0}),
       c1 = df.add(vega.Collect, {pulse: j0}),
       e0 = df.add(vega.Encode, {
         encoders: paths,
-        $x: $x, $y: $y,
-        xs: xs, ys: ys,
+        $key: $key, $value: $value, $depth: $depth,
+        xs: xs, ys: ys, cs: cs,
         pulse: c1
       }),
 
@@ -164,7 +191,7 @@ function line(el, width, height) {
   return {
     dataflow: df,
     points: prop(d0),
-    xscale: prop(xs),
-    yscale: prop(ys)
+    fields: prop(fields),
+    f0: prop(f0)
   };
 }
