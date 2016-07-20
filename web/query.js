@@ -26,8 +26,22 @@ function getAggregateSampleDataForStation(stationId,callback) {
   bdRelationalQuery(queryString,callback);
 };
 
+// gets all sample info associated with this station, but only for the columns specified
+function getSpecificSampleDataForStation(stationId,fieldNames,callback) {
+  var queryString = ["select",
+    "depth_m,"+fieldNames.join(","),
+    "from sampledata.main where bodc_station="+stationId].join(" ");
+/*
+  for(var i = 0; i < fieldNames.length; i++){
+    queryString += " and "+fieldNames[i]+" is not null";
+  }
+*/
+  console.log("queryString:",queryString);
+  bdRelationalQuery(queryString,callback);
+};
+
 // gets all sample info associated with this station
-function getSampleDataForStation(stationId,callback) {
+function getAllSampleDataForStation(stationId,callback) {
   var queryString = "select * from sampledata.main where bodc_station="+stationId+" and depth_m is not null";
   bdRelationalQuery(queryString,callback);
 };
@@ -52,13 +66,20 @@ function bdRaw(bigDawgQuery,callback) {
     var fields = lines[0].split("\t");
     for(var i = 1; i < lines.length; i++) {
       var line = lines[i];
+      var noNulls = true;
       if(line.length > 0) {
         var row = {};
         var vals = line.split("\t")
         for(var j = 0; j < vals.length; j++) {
           row[fields[j]] = !isNaN(+vals[j]) ? +vals[j] : vals[j];
+          if(vals[j] === "null"){
+            noNulls = false;
+            break;
+          }
         }
-        rows.push(row);
+        if(noNulls) {
+          rows.push(row);
+        }
       }
     }
     callback(rows);
