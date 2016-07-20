@@ -110,6 +110,19 @@
         left: -25px;
       }
 
+      #fieldInputs label {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      #fieldInputs label:hover {
+        opacity: 0.4;
+      }
+
     </style>
   </head>
   <body>
@@ -118,22 +131,29 @@
     <div id="linev" class="view"></div>
 
     <form id="fieldInputs">
-      <p><label><input type="checkbox" id="oxygen_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="oxygen_umol_per_kg"> oxygen_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="ctdoxy_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="ctdoxy_umol_per_kg"> ctdoxy_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="phspht_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="phspht_umol_per_kg"> phspht_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="silcat_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="silcat_umol_per_kg"> silcat_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="nitrat_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="nitrat_umol_per_kg"> nitrat_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="nitrit_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="nitrit_umol_per_kg"> nitrit_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="no2_plus_no3_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="no2_plus_no3_umol_per_kg"> no2_plus_no3_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="nh4_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="nh4_umol_per_kg"> nh4_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="talk_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="talk_umol_per_kg"> talk_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="doc_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="doc_umol_per_kg"> doc_umol_per_kg</label></p>
-      <p><label><input type="checkbox" id="pon_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="pon_umol_per_kg"> pon_umol_per_kg</label></p>
-<!--
-      <p><label><input type="checkbox" id="tn_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="tn_umol_per_kg"> tn_umol_per_kg</label></p>
--->
+      <label id="oxygen_umol_per_kg"><input type="checkbox" name="fieldNames" value="oxygen_umol_per_kg" onclick="changeMeasures()"> oxygen_umol_per_kg</label>
 
-      <p><label><input type="checkbox" id="toc_umol_per_kg" name="fieldNames" onclick="changeMeasures()" value="toc_umol_per_kg"> toc_umol_per_kg</label></p>
+      <label id="ctdoxy_umol_per_kg"><input type="checkbox" name="fieldNames" value="ctdoxy_umol_per_kg" onclick="changeMeasures()"> ctdoxy_umol_per_kg</label>
+
+      <label id="phspht_umol_per_kg"><input type="checkbox" name="fieldNames" value="phspht_umol_per_kg" onclick="changeMeasures()"> phspht_umol_per_kg</label>
+
+      <label id="silcat_umol_per_kg"><input type="checkbox" name="fieldNames" value="silcat_umol_per_kg" onclick="changeMeasures()"> silcat_umol_per_kg</label>
+
+      <label id="nitrat_umol_per_kg"><input type="checkbox" name="fieldNames" value="nitrat_umol_per_kg" onclick="changeMeasures()"> nitrat_umol_per_kg</label>
+
+      <label id="nitrit_umol_per_kg"><input type="checkbox" name="fieldNames" value="nitrit_umol_per_kg" onclick="changeMeasures()"> nitrit_umol_per_kg</label>
+
+      <label id="no2_plus_no3_umol_per_kg"><input type="checkbox" name="fieldNames" value="no2_plus_no3_umol_per_kg" onclick="changeMeasures()"> no2_plus_no3_umol_per_kg</label>
+
+      <label id="nh4_umol_per_kg"><input type="checkbox" name="fieldNames" value="nh4_umol_per_kg" onclick="changeMeasures()"> nh4_umol_per_kg</label>
+
+      <label id="talk_umol_per_kg"><input type="checkbox" name="fieldNames" value="talk_umol_per_kg" onclick="changeMeasures()"> talk_umol_per_kg</label>
+
+      <label id="doc_umol_per_kg"><input type="checkbox" name="fieldNames" value="doc_umol_per_kg" onclick="changeMeasures()"> doc_umol_per_kg</label>
+
+      <label id="pon_umol_per_kg"><input type="checkbox" name="fieldNames" value="pon_umol_per_kg" onclick="changeMeasures()"> pon_umol_per_kg</label>
+
+      <label id="toc_umol_per_kg"><input type="checkbox" name="fieldNames" value="toc_umol_per_kg" onclick="changeMeasures()"> toc_umol_per_kg</label>
     </form>
 
     <script type="text/javascript">
