@@ -31,12 +31,13 @@ function getSpecificSampleDataForStation(stationId,fieldNames,callback) {
   var queryString = ["select",
     "depth_m,"+fieldNames.join(","),
     "from sampledata.main where bodc_station="+stationId].join(" ");
-/*
+
+  queryString += " and depth_m is not null";
   for(var i = 0; i < fieldNames.length; i++){
     queryString += " and "+fieldNames[i]+" is not null";
   }
-*/
-  // console.log("queryString:",queryString);
+
+  //console.log("queryString:",queryString);
   bdRelationalQuery(queryString,callback);
 };
 
@@ -72,14 +73,8 @@ function bdRaw(bigDawgQuery,callback) {
         var vals = line.split("\t")
         for(var j = 0; j < vals.length; j++) {
           row[fields[j]] = !isNaN(+vals[j]) ? +vals[j] : vals[j];
-          if(vals[j] === "null"){
-            noNulls = false;
-            break;
-          }
         }
-        if(noNulls) {
-          rows.push(row);
-        }
+        rows.push(row);
       }
     }
     callback(rows);
