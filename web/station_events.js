@@ -39,7 +39,7 @@ function getAggregateData(o,stationId){
       $(o).tooltip({content:
         "station: "+stationId+", "
         +"total genome sequences: "+gc+", "
-        +"genetic diversity score: xx, "
+        //+"genetic diversity score: xx, "
         +"total samples: "+sc+""});
       $(o).tooltip("open");
       o.hasTooltip = true;
